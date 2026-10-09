@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Outubro Rosa Pet | Prevenção e Cuidado</title>
-    <meta name="description" content="Aprenda a prevenir e diagnosticar o câncer de mama em cães e gatos. Um projeto de extensão universitária.">
+    <title>Outubro Rosa Pet | FMVZ UNESP</title>
+    <meta name="description" content="Projeto de extensão universitária sobre a prevenção e diagnóstico do câncer de mama em cães e gatos.">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AOS Scroll Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -22,21 +31,34 @@
                             200: '#fbcfe8',
                             300: '#f9a8d4',
                             400: '#f472b6',
-                            500: '#ec4899', // Rosa principal
+                            500: '#ec4899',
                             600: '#db2777',
                             700: '#be185d',
                             800: '#9d174d',
                             900: '#831843',
+                            950: '#500724',
                         },
                         dark: '#0f172a'
                     },
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
+                        'blob': 'blob 10s infinite',
+                        'pulse-glow': 'pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(40px, -60px) scale(1.1)' },
+                            '66%': { transform: 'translate(-30px, 30px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' }
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: 0.5, transform: 'scale(1)' },
+                            '50%': { opacity: 0.9, transform: 'scale(1.05)' },
                         }
                     }
                 }
@@ -44,243 +66,534 @@
         }
     </script>
     <style>
+        [x-cloak] { display: none !important; }
+
         .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px rgba(236, 72, 153, 0.12);
+        }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.75) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 50px rgba(236, 72, 153, 0.15);
+        }
+        .dark-glass-card {
+            background: linear-gradient(145deg, rgba(131, 24, 67, 0.4) 0%, rgba(80, 7, 36, 0.6) 100%);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px rgba(236, 72, 153, 0.08);
+            border: 1px solid rgba(249, 168, 212, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         .text-gradient {
-            background: linear-gradient(135deg, #db2777 0%, #f472b6 100%);
+            background: linear-gradient(135deg, #db2777 0%, #f472b6 40%, #f9a8d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-light {
+            background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 50%, #f472b6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .bg-mesh {
             background-color: #fdf2f8;
             background-image: 
-                radial-gradient(at 0% 0%, hsla(330,81%,85%,1) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, hsla(338,90%,90%,1) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, hsla(320,70%,85%,1) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(340,80%,90%,1) 0px, transparent 50%);
+                radial-gradient(at 10% 10%, hsla(330,81%,85%,0.6) 0px, transparent 50%),
+                radial-gradient(at 90% 10%, hsla(338,90%,90%,0.7) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, hsla(320,70%,85%,0.5) 0px, transparent 50%),
+                radial-gradient(at 10% 90%, hsla(340,80%,90%,0.6) 0px, transparent 50%);
+        }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+        
+        .glow-border {
+            position: relative;
+        }
+        .glow-border::before {
+            content: "";
+            position: absolute;
+            inset: -3px;
+            border-radius: inherit;
+            background: linear-gradient(45deg, #ec4899, #f9a8d4, #db2777, #fbcfe8);
+            z-index: -1;
+            filter: blur(12px);
+            opacity: 0.5;
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+
+        /* Classes para o carrossel nativo */
+        .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brand-300 selection:text-brand-900">
+<body class="bg-brand-50 text-slate-800 font-sans antialiased selection:bg-brand-400 selection:text-white overflow-x-hidden relative">
+
+    <!-- Global Ambient Lights -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-1/4 -left-40 w-[500px] h-[500px] bg-brand-300/40 rounded-full mix-blend-multiply filter blur-[120px] animate-pulse-glow"></div>
+        <div class="absolute bottom-1/4 -right-40 w-[600px] h-[600px] bg-brand-400/30 rounded-full mix-blend-multiply filter blur-[150px] animate-pulse-glow animation-delay-2000"></div>
+    </div>
 
     <!-- Navbar -->
-    <nav class="fixed w-full z-50 glass-panel border-b-0 transition-all duration-300">
+    <nav class="fixed w-full z-50 glass-panel border-b-0 transition-all duration-300" data-aos="fade-down" data-aos-duration="1000">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-brand-600 via-brand-500 to-brand-300 flex items-center justify-center text-white shadow-lg shadow-brand-500/40">
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                 </div>
-                <span class="font-display font-bold text-xl text-dark tracking-tight">Outubro Rosa <span class="text-brand-600">Pet</span></span>
+                <span class="font-display font-bold text-2xl text-dark tracking-tight">Outubro Rosa <span class="text-gradient">Pet</span></span>
             </div>
             <div class="hidden md:flex items-center space-x-8 font-medium text-sm">
-                <a href="#video" class="text-slate-600 hover:text-brand-600 transition-colors">Aprenda o Toque</a>
-                <a href="#anatomia" class="text-slate-600 hover:text-brand-600 transition-colors">Sinais de Alerta</a>
-                <a href="#mitos" class="text-slate-600 hover:text-brand-600 transition-colors">Mitos e Verdades</a>
-                <a href="#downloads" class="px-5 py-2.5 bg-dark text-white rounded-full hover:bg-brand-600 transition-all shadow-md">Downloads</a>
+                <a href="#video" class="text-slate-600 hover:text-brand-600 transition-colors">Como Cuidar</a>
+                <a href="#sobre" class="text-slate-600 hover:text-brand-600 transition-colors">Quem Somos</a>
+                <a href="#dados" class="text-slate-600 hover:text-brand-600 transition-colors">Fique de Olho</a>
+                <a href="#diagnostico" class="px-6 py-3 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-full hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] hover:scale-105 transition-all">O Veterinário</a>
             </div>
         </div>
     </nav>
 
-    <!-- 1. HERO & VIDEO SECTION (A Estrela da Página) -->
-    <section id="video" class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-mesh overflow-hidden">
+    <!-- 1. Hero Section -->
+    <header class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 bg-mesh overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center max-w-3xl mx-auto mb-12 animate-float">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur border border-brand-200 text-brand-700 text-sm font-semibold mb-6 shadow-sm">
-                    ✨ Câncer de Mama em Pets tem cura se descoberto cedo
-                </div>
-                <h1 class="text-5xl md:text-6xl font-display font-extrabold text-dark tracking-tight leading-tight mb-6">
-                    O carinho que <br> <span class="text-gradient">salva vidas.</span>
-                </h1>
-                <p class="text-xl text-slate-700 mb-2">
-                    Aprenda a fazer a palpação no seu pet em casa. É rápido, fácil e é um ato de amor!
-                </p>
-            </div>
-
-            <!-- Video Player Principal -->
-            <div class="max-w-4xl mx-auto">
-                <div class="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-brand-500/20 bg-dark group ring-4 ring-white/50">
-                    <!-- Placeholder do Vídeo -->
-                    <div class="aspect-video relative flex flex-col items-center justify-center bg-slate-800">
-                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80" alt="Cachorro recebendo carinho" class="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay transition-transform duration-700 group-hover:scale-105">
-                        
-                        <div class="z-10 flex flex-col items-center">
-                            <button class="w-20 h-20 bg-brand-500/90 backdrop-blur hover:bg-brand-600 text-white rounded-full flex items-center justify-center transition-all transform hover:scale-110 shadow-[0_0_40px_rgba(236,72,153,0.5)] mb-6">
-                                <svg class="w-10 h-10 ml-2" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            </button>
-                            <h3 class="text-2xl font-display font-bold text-white mb-2 text-center px-4">Assistir Tutorial de Palpação</h3>
-                            <p class="text-slate-300 text-sm">(Em breve o vídeo oficial editado por você!)</p>
-                        </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <div class="text-center lg:text-left z-10" data-aos="fade-right" data-aos-duration="1200">
+                    <p class="uppercase tracking-widest text-brand-600 font-bold text-sm mb-4">Projeto de Extensão FMVZ</p>
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-display font-extrabold text-slate-800 tracking-tight leading-[1.1] mb-6">
+                        Prevenção também é <br><span class="text-gradient">amor</span> pelos nossos pets.
+                    </h1>
+                    <p class="text-xl lg:text-2xl text-slate-700 mb-10 max-w-2xl mx-auto lg:mx-0 font-light">
+                        O conhecimento e o autocuidado são os primeiros passos para combater o câncer de mama em cães e gatos. Uma iniciativa da Turma LXII.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
+                        <a href="#video" class="inline-flex justify-center items-center gap-2 px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-full font-bold shadow-[0_10px_30px_rgba(236,72,153,0.4)] hover:shadow-[0_15px_40px_rgba(236,72,153,0.6)] hover:-translate-y-1 transition-all">
+                            Aprenda a Palpação
+                        </a>
+                        <a href="#dados" class="inline-flex justify-center items-center gap-2 px-8 py-4 bg-white/80 backdrop-blur text-brand-800 border-2 border-brand-200 rounded-full font-bold shadow-lg hover:border-brand-400 hover:bg-white transition-all">
+                            Cuidados e Alertas
+                        </a>
                     </div>
                 </div>
-                <p class="text-center mt-6 text-sm text-slate-500 font-medium flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    Atenção: O autoexame não substitui a consulta com o Médico Veterinário!
-                </p>
+
+                <div class="flex justify-center lg:justify-end animate-float relative z-10" data-aos="fade-left" data-aos-duration="1500" data-aos-delay="200">
+                    <div class="relative">
+                        <img src="assets/selo.png" alt="Selo Outubro Rosa" class="relative w-80 md:w-96 lg:w-[500px] object-contain mix-blend-multiply drop-shadow-xl" onerror="this.src='https://placehold.co/500x500/fdf2f8/ec4899?text=Selo+Outubro+Rosa'">
+                    </div>
+                </div>
+
             </div>
         </div>
         
-        <!-- Elementos decorativos de fundo -->
-        <div class="absolute top-20 left-10 w-64 h-64 bg-brand-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div class="absolute top-40 right-10 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-    </section>
+        <!-- Elementos decorativos de fundo HERO -->
+        <div class="absolute top-20 left-10 w-72 h-72 bg-brand-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob"></div>
+        <div class="absolute top-40 right-10 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-20 left-1/2 w-80 h-80 bg-brand-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-30 animate-blob animation-delay-4000"></div>
+    </header>
 
-    <!-- 2. PASSO A PASSO VISUAL & SINAIS DE ALERTA -->
-    <section id="anatomia" class="py-24 bg-white relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-display font-bold text-dark mb-4">Onde procurar?</h2>
-                <p class="text-lg text-slate-600 max-w-2xl mx-auto">Complementando o vídeo, veja os principais pontos de atenção no corpinho do seu pet e o que você deve buscar.</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <!-- Sinais de alerta (Texto) -->
-                <div class="space-y-8">
-                    <div class="flex gap-4">
-                        <div class="w-12 h-12 flex-shrink-0 bg-brand-100 rounded-2xl flex items-center justify-center text-brand-600 font-bold text-xl">1</div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-dark mb-2">Apalpe as mamas</h3>
-                            <p class="text-slate-600">Com o animal deitado de barriga para cima, massageie suavemente cada uma das mamas. Gatas e cadelas possuem várias mamas ao longo do abdômen.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="w-12 h-12 flex-shrink-0 bg-brand-100 rounded-2xl flex items-center justify-center text-brand-600 font-bold text-xl">2</div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-dark mb-2">Atenção perto das patas</h3>
-                            <p class="text-slate-600">Nas cadelas, os tumores são muito mais comuns nas últimas mamas (aquelas que ficam mais pertinho das pernas de trás). Fique de olho!</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="w-12 h-12 flex-shrink-0 bg-brand-100 rounded-2xl flex items-center justify-center text-brand-600 font-bold text-xl">3</div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-dark mb-2">O que estou procurando?</h3>
-                            <p class="text-slate-600">Qualquer "carocinho", bolinha dura, inchaço anormal, vermelhidão ou secreção saindo das mamas é um sinal de alerta vermelho.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Imagem / Infográfico -->
-                <div class="relative group">
-                    <div class="absolute -inset-4 bg-gradient-to-r from-brand-300 to-purple-300 rounded-[3rem] blur-xl opacity-30 group-hover:opacity-50 transition duration-500"></div>
-                    <div class="relative bg-white rounded-[2rem] p-4 shadow-xl border border-slate-100">
-                        <!-- Substitua o src pela imagem do infografico quando quiser -->
-                        <img src="assets/infografico.png" alt="Infográfico de anatomia e palpação" class="w-full h-auto rounded-2xl" onerror="this.src='https://placehold.co/800x600/fdf2f8/ec4899?text=Espa%C3%A7o+para+o+Infogr%C3%A1fico'">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. MITOS E VERDADES -->
-    <section id="mitos" class="py-24 bg-slate-900 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-display font-bold mb-4">Mitos e Verdades</h2>
-                <p class="text-slate-400 text-lg">Acabe com as dúvidas e proteja seu animal da maneira certa.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                <!-- Mito 1 -->
-                <div class="bg-slate-800 rounded-3xl p-8 border border-slate-700 hover:border-brand-500 transition-colors">
-                    <div class="flex items-center gap-3 mb-6">
-                        <span class="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-sm font-bold tracking-wide">MITO</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">"Vacina para não dar cria é seguro"</h3>
-                    <p class="text-slate-400"><strong>Falso!</strong> Essas injeções anticoncepcionais são bombas de hormônios. Elas são uma das maiores causadoras de tumores de mama e infecções graves no útero.</p>
-                </div>
-
-                <!-- Verdade 1 -->
-                <div class="bg-slate-800 rounded-3xl p-8 border border-slate-700 hover:border-emerald-500 transition-colors">
-                    <div class="flex items-center gap-3 mb-6">
-                        <span class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-sm font-bold tracking-wide">VERDADE</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">"Castrar previne o câncer"</h3>
-                    <p class="text-slate-400"><strong>Sim!</strong> Castrar a cadela antes do primeiro cio reduz a chance de câncer para quase 0%. Gatas não castradas têm 7x mais risco de adoecer. Castrar é um ato de amor.</p>
-                </div>
-
-                <!-- Verdade 2 -->
-                <div class="bg-slate-800 rounded-3xl p-8 border border-slate-700 hover:border-amber-500 transition-colors">
-                    <div class="flex items-center gap-3 mb-6">
-                        <span class="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-sm font-bold tracking-wide">VERDADE</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">"Gatas têm tumores mais agressivos"</h3>
-                    <p class="text-slate-400"><strong>Infelizmente sim.</strong> Cerca de 80% dos tumores de mama em gatas são malignos e se espalham rápido. Por isso, a prevenção (castração) e o diagnóstico precoce são urgentes.</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. CENTRAL DE DOWNLOADS & REDES SOCIAIS -->
-    <section id="downloads" class="py-24 bg-brand-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-[3rem] p-8 md:p-16 shadow-2xl shadow-brand-200/50 border border-brand-100 flex flex-col lg:flex-row gap-12 items-center justify-between">
-                
-                <div class="lg:w-1/2">
-                    <h2 class="text-4xl font-display font-bold text-dark mb-6">Espalhe essa ideia!</h2>
-                    <p class="text-lg text-slate-600 mb-8">
-                        Ajude a salvar mais vidas. Baixe nossos materiais gratuitos e compartilhe com amigos, familiares, pet shops e clínicas veterinárias da sua região.
-                    </p>
-                    
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#" class="inline-flex justify-center items-center gap-2 px-6 py-4 bg-brand-600 text-white rounded-full font-bold shadow-lg shadow-brand-500/30 hover:bg-brand-700 hover:-translate-y-1 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Baixar Panfleto (PDF)
-                        </a>
-                        <a href="#" class="inline-flex justify-center items-center gap-2 px-6 py-4 bg-white text-dark border-2 border-slate-200 rounded-full font-bold hover:border-dark transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Baixar Pôster (PDF)
-                        </a>
-                    </div>
-                </div>
-
-                <div class="lg:w-5/12 w-full">
-                    <div class="glass-panel rounded-3xl p-8 text-center bg-gradient-to-br from-brand-100 to-white">
-                        <div class="w-16 h-16 bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-400 rounded-2xl mx-auto flex items-center justify-center text-white mb-6 shadow-xl">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-dark mb-2">Siga o Projeto</h3>
-                        <p class="text-slate-600 mb-6">Acompanhe dicas diárias, bastidores e muito mais no nosso Instagram.</p>
-                        <a href="#" class="inline-block w-full py-3 bg-gradient-to-r from-purple-500 via-brand-500 to-orange-500 text-white font-bold rounded-xl shadow-lg hover:opacity-90 transition-opacity">
-                            @OutubroRosaPet
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Rodapé -->
-    <footer class="bg-dark text-slate-400 py-12 border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+    <!-- 2. Vídeos Práticos (Aba Cadelas / Aba Gatas) -->
+    <section id="video" class="py-24 relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" x-data="{ tabAtiva: 'cadelas' }">
             
-            <div class="flex flex-col items-center md:items-start">
-                <img src="assets/logo-fmvz.png" alt="Logo FMVZ UNESP" class="h-16 object-contain mix-blend-screen opacity-70 mb-4 filter grayscale hover:grayscale-0 transition-all" onerror="this.style.display='none'">
-                <p class="text-sm text-center md:text-left">
+            <!-- Introdução da Seção (Topo) -->
+            <div class="text-center max-w-4xl mx-auto mb-16" data-aos="fade-up">
+                <h2 class="text-5xl font-display font-extrabold text-slate-800 mb-8">Como realizar a <span class="text-gradient">palpação</span> em casa</h2>
+                <p class="text-2xl text-slate-600 font-light leading-relaxed mb-6">
+                    Produzimos um material audiovisual completo com pacientes reais, ensinando passo a passo como você, tutor, pode fazer a palpação preventiva.
+                </p>
+                <p class="text-lg text-slate-500 bg-brand-50/80 p-6 rounded-2xl border border-brand-100 shadow-sm inline-block">
+                    O toque carinhoso na barriga do seu pet pode revelar nódulos pequenos. Lembre-se: o autoexame <strong class="text-brand-600">não substitui a avaliação do Médico Veterinário</strong>, mas adianta o diagnóstico!
+                </p>
+            </div>
+
+            <!-- Botões das Abas -->
+            <div class="flex flex-col sm:flex-row justify-center gap-6 mb-16" data-aos="fade-up" data-aos-delay="100">
+                <button @click="tabAtiva = 'cadelas'" 
+                        :class="tabAtiva === 'cadelas' ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-[0_10px_20px_rgba(236,72,153,0.4)] border-transparent scale-105' : 'bg-white/80 backdrop-blur text-brand-800 border-brand-200 hover:border-brand-400'"
+                        class="px-10 py-4 rounded-full font-bold text-xl transition-all border-2 flex items-center justify-center gap-3">
+                    <span class="text-2xl">🐶</span> Palpação Cadelas
+                </button>
+                <button @click="tabAtiva = 'gatas'" 
+                        :class="tabAtiva === 'gatas' ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-[0_10px_20px_rgba(236,72,153,0.4)] border-transparent scale-105' : 'bg-white/80 backdrop-blur text-brand-800 border-brand-200 hover:border-brand-400'"
+                        class="px-10 py-4 rounded-full font-bold text-xl transition-all border-2 flex items-center justify-center gap-3">
+                    <span class="text-2xl">🐱</span> Palpação Gatas
+                </button>
+            </div>
+
+            <div class="max-w-6xl mx-auto">
+                <!-- Tab: Cadelas -->
+                <!-- Use flex-col-reverse so Video comes FIRST on mobile, and Right on Desktop via lg:flex-row -->
+                <div x-show="tabAtiva === 'cadelas'" 
+                     x-transition:enter="transition ease-out duration-500" 
+                     x-transition:enter-start="opacity-0 translate-y-8" 
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     class="flex flex-col-reverse lg:flex-row gap-12 items-center">
+                    
+                    <!-- Coluna da Esquerda (Desktop) / Embaixo (Mobile): Texto e Botão -->
+                    <div class="w-full lg:w-1/2 space-y-6 lg:pr-8">
+                        <div class="flex items-center gap-4 mb-4">
+                            <h3 class="text-3xl font-display font-bold text-brand-900">Mamas Traseiras</h3>
+                        </div>
+                        <p class="text-xl text-slate-700 leading-relaxed font-light">
+                            Ao palpar sua cadela, preste atenção extra nas <strong>mamas traseiras</strong> (próximas às patas de trás). Essas glândulas costumam ser as mais afetadas pelo desenvolvimento de carocinhos e requerem atenção redobrada durante o toque.
+                        </p>
+                        
+                        <div class="pt-6">
+                            <a href="assets/panfleto-cadelas.pdf" target="_blank" class="glass-card inline-flex items-center gap-3 px-8 py-4 text-brand-800 rounded-2xl font-bold hover:-translate-y-1 transition-all group border-brand-200">
+                                <svg class="w-6 h-6 text-brand-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Baixar Panfleto - Cadelas
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Coluna da Direita (Desktop) / Topo (Mobile): Vídeo -->
+                    <div class="w-full lg:w-1/2">
+                        <div class="glow-border rounded-[2.5rem]">
+                            <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl bg-dark group ring-4 ring-white/50 z-10">
+                                <div class="aspect-video relative flex flex-col items-center justify-center bg-slate-900">
+                                    <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80" alt="Cachorro recebendo carinho na barriga" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay transition-transform duration-1000 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-brand-900/80 to-transparent"></div>
+                                    
+                                    <div class="z-10 flex flex-col items-center">
+                                        <button class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-brand-400 to-brand-600 backdrop-blur text-white rounded-full flex items-center justify-center transition-all transform group-hover:scale-110 shadow-[0_0_50px_rgba(236,72,153,0.8)] mb-6 border-4 border-white/20">
+                                            <svg class="w-10 h-10 md:w-12 md:h-12 ml-2" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </button>
+                                        <h3 class="text-2xl md:text-3xl font-display font-bold text-white mb-2 text-center px-4 drop-shadow-md">Vídeo Cadelas</h3>
+                                        <p class="text-brand-100 text-sm md:text-base text-center px-4 font-medium">Em breve (fase de edição)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Gatas -->
+                <!-- Use flex-col so Video comes FIRST on mobile, and Left on Desktop via lg:flex-row -->
+                <div x-show="tabAtiva === 'gatas'" x-cloak
+                     x-transition:enter="transition ease-out duration-500" 
+                     x-transition:enter-start="opacity-0 translate-y-8" 
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     class="flex flex-col lg:flex-row gap-12 items-center">
+                    
+                    <!-- Coluna da Esquerda (Desktop) / Topo (Mobile): Vídeo -->
+                    <div class="w-full lg:w-1/2">
+                        <div class="glow-border rounded-[2.5rem]">
+                            <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl bg-dark group ring-4 ring-white/50 z-10">
+                                <div class="aspect-video relative flex flex-col items-center justify-center bg-slate-900">
+                                    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1200&q=80" alt="Gato recebendo carinho na barriga" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay transition-transform duration-1000 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-brand-900/80 to-transparent"></div>
+                                    
+                                    <div class="z-10 flex flex-col items-center">
+                                        <button class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-brand-400 to-brand-600 backdrop-blur text-white rounded-full flex items-center justify-center transition-all transform group-hover:scale-110 shadow-[0_0_50px_rgba(236,72,153,0.8)] mb-6 border-4 border-white/20">
+                                            <svg class="w-10 h-10 md:w-12 md:h-12 ml-2" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </button>
+                                        <h3 class="text-2xl md:text-3xl font-display font-bold text-white mb-2 text-center px-4 drop-shadow-md">Vídeo Gatas</h3>
+                                        <p class="text-brand-100 text-sm md:text-base text-center px-4 font-medium">Em breve (fase de edição)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna da Direita (Desktop) / Embaixo (Mobile): Texto e Botão -->
+                    <div class="w-full lg:w-1/2 space-y-6 lg:pl-8">
+                        <div class="flex items-center gap-4 mb-4">
+                            <h3 class="text-3xl font-display font-bold text-brand-900">Mamas Abdominais</h3>
+                        </div>
+                        <p class="text-xl text-slate-700 leading-relaxed font-light">
+                            Nas felinas, o foco deve ser distribuído, mas verifique cuidadosamente as <strong>mamas abdominais</strong> (na região da barriga). Tumores em gatas são frequentemente agressivos, tornando a detecção inicial através da palpação abdominal essencial.
+                        </p>
+                        
+                        <div class="pt-6">
+                            <a href="assets/panfleto-gatas.pdf" target="_blank" class="glass-card inline-flex items-center gap-3 px-8 py-4 text-brand-800 rounded-2xl font-bold hover:-translate-y-1 transition-all group border-brand-200">
+                                <svg class="w-6 h-6 text-brand-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Baixar Panfleto - Gatas
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- 3. Sobre o Projeto -->
+    <section id="sobre" class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-50/50 -z-10"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h2 class="text-5xl font-display font-extrabold text-slate-800 mb-10" data-aos="fade-up">Sobre o <span class="text-gradient">Projeto</span></h2>
+            <div class="glass-card rounded-[3rem] p-10 md:p-16 relative overflow-hidden" data-aos="zoom-in" data-aos-delay="200">
+                <!-- Inner glow -->
+                <div class="absolute -top-20 -right-20 w-64 h-64 bg-brand-200 rounded-full filter blur-[80px] opacity-60"></div>
+                <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-brand-300 rounded-full filter blur-[80px] opacity-40"></div>
+                
+                <p class="text-xl md:text-2xl text-slate-700 leading-relaxed relative z-10 font-light">
+                    Nós somos um grupo de 17 alunos do 2º ano de Medicina Veterinária. Como parte da nossa carga horária de extensão na disciplina de Anatomia Patológica, desenvolvemos este portal para conscientizar tutores sobre o câncer de mama em animais de companhia. 
+                    <br><br>
+                    Nossa missão é <strong class="text-brand-600 font-bold bg-brand-100 px-2 py-1 rounded-lg">democratizar a informação</strong> e ensinar o diagnóstico precoce através do autoexame domiciliar.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Fique de Olho (Dados) -->
+    <section id="dados" class="py-32 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20" data-aos="fade-up">
+                <h2 class="text-5xl font-display font-extrabold text-slate-800 mb-6">Cães e Gatos: <br>O que você precisa saber</h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto font-light">O câncer de mama é muito comum nos nossos bichinhos, mas a informação é a nossa maior aliada. Veja os cuidados principais para cada um:</p>
+            </div>
+
+            <!-- Carrossel Nativo no Mobile, Grid no Desktop -->
+            <div class="flex lg:grid lg:grid-cols-2 overflow-x-auto lg:overflow-visible snap-x snap-mandatory gap-6 pb-8 hide-scrollbar">
+                
+                <!-- Card Cadelas -->
+                <div class="min-w-[90vw] lg:min-w-0 flex-1 snap-center glass-card rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden group hover:-translate-y-2 transition-all duration-500 border-t-8 border-t-brand-400" data-aos="fade-up" data-aos-delay="100">
+                    <div class="absolute -top-10 -right-10 w-48 h-48 bg-brand-300 rounded-full filter blur-[60px] opacity-30 group-hover:opacity-60 transition-opacity"></div>
+                    <div class="absolute top-4 right-4 text-7xl opacity-10 group-hover:opacity-20 transition-all group-hover:scale-110 group-hover:rotate-12 transform origin-center">🐶</div>
+                    
+                    <h3 class="text-4xl font-display font-extrabold text-brand-900 mb-8 flex items-center gap-4">Cadelas</h3>
+                    
+                    <div class="space-y-4 relative z-10 text-slate-700">
+                        <!-- Item 1: Onde -->
+                        <div class="flex gap-4 items-start bg-white/60 backdrop-blur-sm p-5 rounded-2xl border border-white">
+                            <span class="text-2xl shrink-0 mt-1">📍</span>
+                            <div>
+                                <h4 class="font-bold text-brand-800 mb-1 text-lg">Onde costumam aparecer?</h4>
+                                <p class="text-sm font-light leading-relaxed">Nas mamas mais próximas da barriguinha e patas traseiras. É comum surgir mais de um nódulo por vez.</p>
+                            </div>
+                        </div>
+                        <!-- Item 2: Castração -->
+                        <div class="flex gap-4 items-start bg-white/60 backdrop-blur-sm p-5 rounded-2xl border border-white">
+                            <span class="text-2xl shrink-0 mt-1">✂️</span>
+                            <div>
+                                <h4 class="font-bold text-brand-800 mb-1 text-lg">A mágica da Castração</h4>
+                                <p class="text-sm font-light leading-relaxed">Castrar antes do primeiro cio reduz a chance de câncer para <strong class="font-bold">quase zero (0,5%)</strong>.</p>
+                                <div class="mt-3 p-3 bg-gradient-to-r from-amber-100 to-amber-50 border-l-4 border-amber-400 text-amber-900 text-sm rounded-r-xl shadow-sm font-light">
+                                    <strong class="font-bold">Importante:</strong> Converse com o veterinário para achar o momento perfeito e não afetar o desenvolvimento ósseo.
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 3: Vacinas -->
+                        <div class="flex gap-4 items-start bg-white/60 backdrop-blur-sm p-5 rounded-2xl border border-white">
+                            <span class="text-2xl shrink-0 mt-1">⚠️</span>
+                            <div>
+                                <h4 class="font-bold text-brand-800 mb-1 text-lg">Cuidado com "Vacinas Anticio"</h4>
+                                <p class="text-sm font-light leading-relaxed">São bombas hormonais que <strong class="text-red-500 bg-red-100 px-1 rounded font-bold">induzem tumores graves</strong>. A castração é o único caminho seguro!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Gatas -->
+                <div class="min-w-[90vw] lg:min-w-0 flex-1 snap-center glass-card rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden group hover:-translate-y-2 transition-all duration-500 border-t-8 border-t-brand-600" data-aos="fade-up" data-aos-delay="300">
+                    <div class="absolute -top-10 -right-10 w-48 h-48 bg-brand-500 rounded-full filter blur-[60px] opacity-20 group-hover:opacity-50 transition-opacity"></div>
+                    <div class="absolute top-4 right-4 text-7xl opacity-10 group-hover:opacity-20 transition-all group-hover:scale-110 group-hover:-rotate-12 transform origin-center">🐱</div>
+                    
+                    <h3 class="text-4xl font-display font-extrabold text-brand-900 mb-8 flex items-center gap-4">Gatas</h3>
+                    
+                    <div class="space-y-4 relative z-10 text-slate-700">
+                        <!-- Item 1: Agressividade -->
+                        <div class="flex gap-4 items-start bg-white/60 backdrop-blur-sm p-5 rounded-2xl border border-white">
+                            <span class="text-2xl shrink-0 mt-1">⚠️</span>
+                            <div>
+                                <h4 class="font-bold text-brand-800 mb-1 text-lg">Doença Silenciosa e Agressiva</h4>
+                                <p class="text-sm font-light leading-relaxed">Nas gatinhas o problema é grave. Cerca de 80% dos tumores são malignos e podem se espalhar para o pulmão rapidamente.</p>
+                            </div>
+                        </div>
+                        <!-- Item 2: Onde procurar -->
+                        <div class="flex gap-4 items-start bg-white/60 backdrop-blur-sm p-5 rounded-2xl border border-white">
+                            <span class="text-2xl shrink-0 mt-1">📍</span>
+                            <div>
+                                <h4 class="font-bold text-brand-800 mb-1 text-lg">Onde procurar?</h4>
+                                <p class="text-sm font-light leading-relaxed">Afeta mais as mamas da região da barriga. Verifique bem pois várias glândulas podem adoecer ao mesmo tempo.</p>
+                            </div>
+                        </div>
+                        <!-- Item 3: Castração salva vidas -->
+                        <div class="glow-border rounded-2xl mt-4">
+                            <div class="flex gap-4 items-start p-5 bg-gradient-to-br from-brand-100 to-white rounded-2xl relative z-10 border border-brand-200">
+                                <span class="text-3xl shrink-0 mt-1">✂️</span>
+                                <div>
+                                    <h4 class="font-bold text-brand-900 mb-1 text-xl">Castrar salva vidas!</h4>
+                                    <p class="text-brand-800 text-sm font-light leading-relaxed">Gatas inteiras (não castradas) têm <strong class="font-bold">7x mais risco</strong> de ter o câncer. Protegê-la é um ato de amor.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Indicador Mobile de Scroll -->
+            <p class="text-center text-sm text-slate-400 mt-2 lg:hidden animate-pulse">← Deslize para ver mais →</p>
+
+        </div>
+    </section>
+
+    <!-- 5. Mitos e Verdades (Sanfona) -->
+    <section id="mitos" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-brand-50/50 -z-10"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" x-data="{ ativo: null }">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-5xl font-display font-extrabold text-slate-800 mb-6">Mitos e <span class="text-gradient">Verdades</span></h2>
+                <p class="text-xl text-slate-600 font-light">Acabe com as dúvidas e proteja seu pet da maneira certa.</p>
+            </div>
+            
+            <div class="space-y-6" data-aos="fade-up" data-aos-delay="200">
+                <!-- Item 1 -->
+                <div class="glass-card rounded-3xl overflow-hidden border border-brand-200/50 hover:border-brand-400 transition-colors shadow-lg">
+                    <button @click="ativo !== 1 ? ativo = 1 : ativo = null" class="w-full text-left p-8 font-display font-bold text-2xl text-brand-900 flex justify-between items-center focus:outline-none">
+                        <span>Castrar precocemente é a melhor prevenção?</span>
+                        <svg :class="ativo === 1 ? 'rotate-180' : ''" class="w-8 h-8 text-brand-500 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="ativo === 1" x-collapse x-cloak>
+                        <div class="px-8 pb-8 text-xl text-slate-700 font-light">
+                            <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-lg font-bold text-sm mb-3">VERDADE</span><br>
+                            Sim, reduz risco em até 99%, mas exige avaliação do veterinário devido ao desenvolvimento ósseo.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="glass-card rounded-3xl overflow-hidden border border-brand-200/50 hover:border-brand-400 transition-colors shadow-lg">
+                    <button @click="ativo !== 2 ? ativo = 2 : ativo = null" class="w-full text-left p-8 font-display font-bold text-2xl text-brand-900 flex justify-between items-center focus:outline-none">
+                        <span>Posso usar "vacina anticio"?</span>
+                        <svg :class="ativo === 2 ? 'rotate-180' : ''" class="w-8 h-8 text-brand-500 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="ativo === 2" x-collapse x-cloak>
+                        <div class="px-8 pb-8 text-xl text-slate-700 font-light">
+                            <span class="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-lg font-bold text-sm mb-3">MITO</span><br>
+                            Mito! Nunca use. Essas injeções são bombas hormonais que induzem o surgimento de tumores de mama e infecções uterinas.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="glass-card rounded-3xl overflow-hidden border border-brand-200/50 hover:border-brand-400 transition-colors shadow-lg">
+                    <button @click="ativo !== 3 ? ativo = 3 : ativo = null" class="w-full text-left p-8 font-display font-bold text-2xl text-brand-900 flex justify-between items-center focus:outline-none">
+                        <span>Achei um carocinho, é câncer sem cura?</span>
+                        <svg :class="ativo === 3 ? 'rotate-180' : ''" class="w-8 h-8 text-brand-500 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="ativo === 3" x-collapse x-cloak>
+                        <div class="px-8 pb-8 text-xl text-slate-700 font-light">
+                            <span class="inline-block px-3 py-1 bg-brand-100 text-brand-800 rounded-lg font-bold text-sm mb-3">MITO</span><br>
+                            Mito! Achar cedo salva vidas. Câncer de mama em pets tem cura se descoberto precocemente. O veterinário confirmará com exames físicos, radiografias e biópsias.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Diagnóstico (O Veterinário) -->
+    <section id="diagnostico" class="py-32 bg-gradient-to-br from-brand-950 via-slate-900 to-brand-900 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0idHJhbnNwYXJlbnQiPjwvcmVjdD4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjA1KSI+PC9jaXJjbGU+Cjwvc3ZnPg==')]"></div>
+        <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-600 rounded-full filter blur-[150px] opacity-20 animate-pulse-glow"></div>
+        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-600 rounded-full filter blur-[150px] opacity-20 animate-pulse-glow animation-delay-2000"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20" data-aos="fade-up">
+                <h2 class="text-5xl font-display font-extrabold text-white mb-6">Achei um carocinho, e agora?</h2>
+                <p class="text-brand-200 max-w-3xl mx-auto text-xl font-light">Não precisa entrar em pânico! Leve seu pet ao veterinário. Veja os passos normais que o doutor(a) vai seguir para cuidar do seu bichinho:</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Passo 1 -->
+                <div class="dark-glass-card rounded-[2rem] p-8 group hover:-translate-y-3 transition-transform duration-300" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 bg-gradient-to-br from-brand-400 to-brand-600 text-white rounded-2xl flex items-center justify-center font-bold text-3xl mb-8 shadow-[0_0_30px_rgba(236,72,153,0.5)] group-hover:scale-110 transition-transform">1</div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Exame Físico</h3>
+                    <p class="text-brand-100/80 leading-relaxed">O veterinário vai fazer uma massagem na barriguinha do animal, apalpando todas as mamas e as "ínguas" para sentir se há mais de um carocinho escondido.</p>
+                </div>
+                
+                <!-- Passo 2 -->
+                <div class="dark-glass-card rounded-[2rem] p-8 group hover:-translate-y-3 transition-transform duration-300" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-16 h-16 bg-gradient-to-br from-brand-400 to-brand-600 text-white rounded-2xl flex items-center justify-center font-bold text-3xl mb-8 shadow-[0_0_30px_rgba(236,72,153,0.5)] group-hover:scale-110 transition-transform">2</div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Radiografia (Raio-X)</h3>
+                    <p class="text-brand-100/80 leading-relaxed">É tirado um Raio-X do peito do animal (tórax). Isso é essencial para ter certeza de que a doença está apenas na mama e não foi para os pulmões.</p>
+                </div>
+
+                <!-- Passo 3 -->
+                <div class="dark-glass-card rounded-[2rem] p-8 group hover:-translate-y-3 transition-transform duration-300" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-16 h-16 bg-gradient-to-br from-brand-400 to-brand-600 text-white rounded-2xl flex items-center justify-center font-bold text-3xl mb-8 shadow-[0_0_30px_rgba(236,72,153,0.5)] group-hover:scale-110 transition-transform">3</div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Ultrassom</h3>
+                    <p class="text-brand-100/80 leading-relaxed">O "ultrassom da barriga" serve para investigar órgãos como fígado e outros gânglios, garantindo que o pet está forte e seguro para uma possível cirurgia.</p>
+                </div>
+
+                <!-- Passo 4 -->
+                <div class="dark-glass-card rounded-[2rem] p-8 group hover:-translate-y-3 transition-transform duration-300" data-aos="fade-up" data-aos-delay="400">
+                    <div class="w-16 h-16 bg-gradient-to-br from-brand-400 to-brand-600 text-white rounded-2xl flex items-center justify-center font-bold text-3xl mb-8 shadow-[0_0_30px_rgba(236,72,153,0.5)] group-hover:scale-110 transition-transform">4</div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Análise (Biópsia)</h3>
+                    <p class="text-brand-100/80 leading-relaxed">Depois que o nódulo é retirado na cirurgia, ele é mandado para o laboratório. Lá eles descobrem exatamente o "nome e sobrenome" daquele tumor para curar o animal!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Call To Action Local (HV UNESP) -->
+    <section id="cta" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-brand-600 to-brand-400 -z-10"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0idHJhbnNwYXJlbnQiPjwvcmVjdD4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjE1KSI+PC9jaXJjbGU+Cjwvc3ZnPg==')] opacity-40"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10" data-aos="zoom-in">
+            <h2 class="text-5xl font-display font-extrabold text-white mb-6">Mora em Botucatu e Região?</h2>
+            <p class="text-2xl text-brand-50 mb-10 font-light leading-relaxed">
+                Em caso de dúvida ou ao notar qualquer alteração no autoexame, direcione-se ao <strong class="font-bold text-white">Hospital Veterinário da UNESP</strong>. Nossa equipe de especialistas está pronta para orientar e cuidar do seu melhor amigo.
+            </p>
+            <a href="#" class="inline-flex justify-center items-center gap-3 px-10 py-5 bg-white text-brand-700 rounded-full font-bold text-xl shadow-[0_15px_40px_rgba(0,0,0,0.2)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Veja como chegar ao HV
+            </a>
+        </div>
+    </section>
+
+    <!-- 8. Rodapé & Referências -->
+    <footer class="bg-slate-900 text-slate-400 py-16 border-t-4 border-brand-500 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-brand-950/30 to-slate-950 pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
+            
+            <div data-aos="fade-up">
+                <img src="assets/logo-fmvz.png" alt="Logo FMVZ UNESP" class="h-20 object-contain mix-blend-screen opacity-90 mb-6 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform" onerror="this.style.display='none'">
+                <p class="text-base text-slate-300 mb-6">
                     Projeto de Extensão Universitária.<br>
                     Medicina Veterinária - FMVZ<br>
-                    <strong>Grupo II • Turma LXII</strong>
+                    <strong class="text-brand-300">Grupo II • Turma LXII</strong>
                 </p>
-            </div>
-
-            <div class="text-center md:text-right">
-                <div class="flex items-center justify-center md:justify-end gap-2 text-brand-500 font-bold mb-2">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <div class="flex items-center gap-3 text-brand-400 font-bold text-lg">
+                    <svg class="w-6 h-6 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                     Ame seu pet.
                 </div>
-                <p class="text-xs text-slate-500">
-                    Site desenvolvido com foco em acessibilidade e responsividade.<br>
-                    &copy; 2026 Todos os direitos reservados.
-                </p>
             </div>
+
+            <div class="md:col-span-2 md:text-right" data-aos="fade-up" data-aos-delay="200">
+                <h4 class="text-white font-display font-bold text-xl mb-6">Referências Bibliográficas</h4>
+                <ul class="text-sm space-y-3 text-slate-400 md:inline-block text-left bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                    <li class="hover:text-brand-300 transition-colors">• Consensus Regarding the Diagnosis, Prognosis and Treatment of Canine and Feline Mammary Tumors (2019). DOI: 10.24070</li>
+                    <li class="hover:text-brand-300 transition-colors">• Factors influencing canine mammary cancer development and postsurgical survival. DOI: 10.1093</li>
+                    <li class="hover:text-brand-300 transition-colors">• Canine Mammary Cancer: State of the Art and Future Perspectives. DOI: 10.3390</li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-8 border-t border-slate-800/80 text-sm text-center text-slate-500 relative z-10" data-aos="fade-in" data-aos-delay="400">
+            &copy; 2026 Turma LXII FMVZ. Todos os direitos reservados.
         </div>
     </footer>
 
+    <!-- Inicialização do AOS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true,
+            duration: 1000,
+            offset: 100,
+            easing: 'ease-out-cubic'
+        });
+    </script>
 </body>
 </html>
